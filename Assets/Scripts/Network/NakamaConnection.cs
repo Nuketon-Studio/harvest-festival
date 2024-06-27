@@ -19,6 +19,8 @@ namespace HavestFestival.Network
 
         public async void Connect()
         {
+            if (!PlayerPrefs.HasKey(_clientRefName)) PlayerPrefs.SetString(_clientRefName, System.Guid.NewGuid().ToString());
+
             Client = new Client(connectionSO.scheme, connectionSO.host, connectionSO.port, connectionSO.serverKey, UnityWebRequestAdapter.Instance);
 
             var authToken = PlayerPrefs.GetString(_sessionTokenName);
@@ -59,12 +61,5 @@ namespace HavestFestival.Network
             
             await Socket.JoinMatchAsync(matchId);
         }
-
-        #region Unity Events
-        void Start()
-        {
-            if(!PlayerPrefs.HasKey(_clientRefName)) PlayerPrefs.SetString(_clientRefName, SystemInfo.deviceUniqueIdentifier);
-        }
-        #endregion
     }
 }
