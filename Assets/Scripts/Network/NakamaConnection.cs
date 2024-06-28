@@ -1,5 +1,8 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using HavestFestival.SO;
 using Nakama;
+using Nakama.TinyJson;
 using UnityEngine;
 
 namespace HavestFestival.Network
@@ -8,6 +11,7 @@ namespace HavestFestival.Network
     {
         private const string _clientRefName = "nakama.clientId";
         private const string _sessionTokenName = "nakama.SessionToken";
+        private const string _sessionRefreshTokenName = "nakama.SessionRefreshToken";
 
         [SerializeField] private NakamaConnectionSO connectionSO;
 
@@ -17,49 +21,74 @@ namespace HavestFestival.Network
 
         private string _ticket;
 
-        public async void Connect()
+        public void Connect()
         {
-            if (!PlayerPrefs.HasKey(_clientRefName)) PlayerPrefs.SetString(_clientRefName, System.Guid.NewGuid().ToString());
-
             Client = new Client(connectionSO.scheme, connectionSO.host, connectionSO.port, connectionSO.serverKey, UnityWebRequestAdapter.Instance);
-
-            var authToken = PlayerPrefs.GetString(_sessionTokenName);
-
-            if (!string.IsNullOrEmpty(authToken))
-            {
-                var session = Nakama.Session.Restore(authToken);
-
-                if (session.IsExpired)
-                {
-                    Debug.LogError("Session has expired");
-                    return;
-                }
-
-                Session = session;
-            }
-
-            if (Session == null)
-            {
-                Session = await Client.AuthenticateDeviceAsync(PlayerPrefs.GetString(_clientRefName));
-
-                PlayerPrefs.SetString(_sessionTokenName, Session.AuthToken);
-            }
-
-            Socket = Client.NewSocket(useMainThread: true);
-            await Socket.ConnectAsync(Session, true);
         }
 
-        public async void CreateMatch() {
-            await Client.UpdateAccountAsync(Session, PlayerPrefs.GetString("playerName"), PlayerPrefs.GetString("playerName"));
+        // private async Task Authentication()
+        // {
+        //     PlayerPrefs.SetString(_clientRefName, System.Guid.NewGuid().ToString());
+
+        //     var authToken = PlayerPrefs.GetString(_sessionTokenName);
+
+        //     if (!string.IsNullOrEmpty(authToken))
+        //     {
+        //         var session = Nakama.Session.Restore(authToken, PlayerPrefs.GetString(_sessionRefreshTokenName));
+
+        //         if (session.IsExpired)
+        //         {
+        //             Debug.LogWarning("Session has expired, refresh now");
+        //             session = await Client.SessionRefreshAsync(session);
+        //         }
+
+        //         Session = session;
+        //     }
+
+        //     if (Session == null)
+        //     {
+        //         Session = await Client.AuthenticateDeviceAsync(PlayerPrefs.GetString(_clientRefName));
+
+        //         PlayerPrefs.SetString(_sessionTokenName, Session.AuthToken);
+        //         PlayerPrefs.SetString(_sessionRefreshTokenName, Session.RefreshToken);
+        //     }
+
+        //     Socket = Client.NewSocket(true);
+        //     await Socket.ConnectAsync(Session, true, 30);
+        // }
+
+        private async Task Authentication()
+        {
+            PlayerPrefs.SetString(_clientRefName, System.Guid.NewGuid().ToString());
+
+            Session = await Client.AuthenticateDeviceAsync(PlayerPrefs.GetString(_clientRefName));
+
+            PlayerPrefs.SetString(_sessionTokenName, Session.AuthToken);
+            PlayerPrefs.SetString(_sessionRefreshTokenName, Session.RefreshToken);
             
-            var matchName = "Room " + PlayerPrefs.GetString("playerName");
-            await Socket.CreateMatchAsync(matchName);
+            Socket = Client.NewSocket(true);
+            await Socket.ConnectAsync(Session, true, 30);
         }
 
-        public async void JoinMatch(string matchId) {
-            await Client.UpdateAccountAsync(Session, PlayerPrefs.GetString("playerName"), PlayerPrefs.GetString("playerName"));
-            
-            await Socket.JoinMatchAsync(matchId);
+        public async Task FindMatch(string name)
+        {
+            await Authentication();
+
+            await Client.UpdateAccountAsync(Session, name, name);
+
+            // assign in match
+            var matchmakerTicket = await Socket.AddMatchmakerAsync();
+            _ticket = matchmakerTicket.Ticket;
+
+            Socket.ReceivedMatchmakerMatched += GameManager.Instance.eventManager.ReceivedMatchmakerMatchedEvent;
+            Socket.ReceivedMatchPresence += GameManager.Instance.eventManager.ReceivedMatchPresenceEvent;
+            Socket.ReceivedStatusPresence += GameManager.Instance.eventManager.ReceivedStatusPresenceEvent;
+            Socket.ReceivedMatchState += GameManager.Instance.eventManager.ReceivedMatchStateEvent;
+        }
+
+        public async Task ExitMatch()
+        {
+            await Socket.RemoveMatchmakerAsync(_ticket);
         }
     }
 }
