@@ -33,7 +33,7 @@ namespace HarvestFestival.Controllers
         }
 
         public void Attack(string prefab) {
-            Projectile.Fire();
+            Projectile.Fire(gameObject, prefab);
         }
         #endregion
     }
