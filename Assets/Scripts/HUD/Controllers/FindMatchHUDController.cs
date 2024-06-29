@@ -1,15 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using HavestFestival.Entities;
-using HavestFestival.Helpers;
-using HavestFestival.HUD.Item;
-using HavestFestival.Types;
+using HarvestFestival.Entities;
+using HarvestFestival.Entities.Network;
+using HarvestFestival.Helpers;
+using HarvestFestival.HUD.Item;
+using HarvestFestival.Types;
 using Nakama;
 using Nakama.TinyJson;
 using UnityEngine;
 
-namespace HavestFestival.HUD.Controllers
+namespace HarvestFestival.HUD.Controllers
 {
     class FindMatchHUDController : MonoBehaviour
     {
@@ -41,7 +42,7 @@ namespace HavestFestival.HUD.Controllers
         {
             _isReady = !_isReady;
 
-            var status = new MatchStatusEntity
+            var status = new MatchStatusEntityNetwork
             {
                 isReady = _isReady,
                 display = StatusMessage()
@@ -49,7 +50,7 @@ namespace HavestFestival.HUD.Controllers
 
             ChangeStatusUI(GameManager.Instance.UserId, status);
 
-            await CommunicationHelper.Send<MatchStatusEntity>(OpCodeType.MATCH_STATUS, status);
+            await CommunicationHelper.Send<MatchStatusEntityNetwork>(OpCodeType.MATCH_STATUS, status);
         }
         #endregion
 
@@ -61,7 +62,7 @@ namespace HavestFestival.HUD.Controllers
         }
 
 
-        private void ChangeStatusUI(string userId, MatchStatusEntity status)
+        private void ChangeStatusUI(string userId, MatchStatusEntityNetwork status)
         {
             var player = _playerMatchs.Find(f => f.player.Id == userId);
 
@@ -78,10 +79,10 @@ namespace HavestFestival.HUD.Controllers
 
             if (isAllReady)
             {
-                var data = new StartGameEntity { sceneIndex = 1 };
+                var data = new StartGameEntityNetwork { sceneIndex = 1 };
 
                 GameManager.Instance.ChangeScene(data.sceneIndex); // change localhost
-                await CommunicationHelper.Send<StartGameEntity>(OpCodeType.START_GAME, data);
+                await CommunicationHelper.Send<StartGameEntityNetwork>(OpCodeType.START_GAME, data);
             }
         }
 
@@ -92,7 +93,7 @@ namespace HavestFestival.HUD.Controllers
             {
                 case OpCodeType.MATCH_STATUS:
                     var stateJson = Encoding.UTF8.GetString(matchState.State);
-                    var state = JsonParser.FromJson<MatchStatusEntity>(stateJson);
+                    var state = JsonParser.FromJson<MatchStatusEntityNetwork>(stateJson);
 
                     ChangeStatusUI(matchState.UserPresence.UserId, state);
 

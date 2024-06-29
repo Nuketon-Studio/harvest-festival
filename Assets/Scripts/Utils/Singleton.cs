@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace HavestFestival.Utils
+namespace HarvestFestival.Utils
 {
     public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
     {

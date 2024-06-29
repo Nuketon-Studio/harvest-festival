@@ -1,15 +1,16 @@
 using System.Text;
-using HavestFestival.Entities;
-using HavestFestival.Managers;
-using HavestFestival.Network;
-using HavestFestival.Types;
-using HavestFestival.Utils;
+using HarvestFestival.Entities;
+using HarvestFestival.Entities.Network;
+using HarvestFestival.Managers;
+using HarvestFestival.Network;
+using HarvestFestival.Types;
+using HarvestFestival.Utils;
 using Nakama;
 using Nakama.TinyJson;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace HavestFestival
+namespace HarvestFestival
 {
     class GameManager : Singleton<GameManager>
     {
@@ -52,7 +53,7 @@ namespace HavestFestival
             switch (matchState.OpCode)
             {
                 case OpCodeType.START_GAME:
-                    StartGameEntity data = JsonParser.FromJson<StartGameEntity>(jsonUtf8);
+                    StartGameEntityNetwork data = JsonParser.FromJson<StartGameEntityNetwork>(jsonUtf8);
                     ChangeScene(data.sceneIndex);
                     break;
             }

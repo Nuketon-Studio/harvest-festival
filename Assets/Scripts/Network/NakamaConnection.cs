@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using HavestFestival.SO;
+using HarvestFestival.SO;
 using Nakama;
 using Nakama.TinyJson;
 using UnityEngine;
 
-namespace HavestFestival.Network
+namespace HarvestFestival.Network
 {
     public class NakamaConnection : MonoBehaviour
     {

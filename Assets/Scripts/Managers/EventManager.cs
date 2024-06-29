@@ -2,7 +2,7 @@ using System;
 using Nakama;
 using UnityEngine;
 
-namespace HavestFestival.Managers
+namespace HarvestFestival.Managers
 {
     class EventManager : MonoBehaviour
     {

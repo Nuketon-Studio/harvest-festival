@@ -1,9 +1,9 @@
 using System;
 
-namespace HavestFestival.Entities
+namespace HarvestFestival.Entities.Network
 {
     [Serializable]
-    class MatchStatusEntity
+    class MatchStatusEntityNetwork
     {
         public bool isReady;
         public string display;

@@ -1,9 +1,9 @@
 using System;
 
-namespace HavestFestival.Entities
+namespace HarvestFestival.Entities.Network
 {
     [Serializable]
-    class StartGameEntity
+    class StartGameEntityNetwork
     {
         public int sceneIndex;
     }

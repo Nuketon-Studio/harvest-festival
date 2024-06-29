@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace HavestFestival.Managers
+namespace HarvestFestival.Managers
 {
     class MenuManager : MonoBehaviour
     {

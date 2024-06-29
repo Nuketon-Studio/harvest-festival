@@ -1,4 +1,4 @@
-namespace HavestFestival.Types
+namespace HarvestFestival.Types
 {
     enum SceneType
     {

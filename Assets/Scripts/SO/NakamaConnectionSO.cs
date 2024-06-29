@@ -1,7 +1,7 @@
 using Nakama;
 using UnityEngine;
 
-namespace HavestFestival.SO
+namespace HarvestFestival.SO
 {
     [CreateAssetMenu(fileName = "NakamaConnectionSO", menuName = "ScriptableObjects/Connection", order = 0)]
     public class NakamaConnectionSO : ScriptableObject
