@@ -149,4 +149,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07c5153b280ee714d929caf8267bea7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  force: 25
+  distance: 50

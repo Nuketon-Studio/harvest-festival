@@ -17,10 +17,15 @@ namespace HarvestFestival.Entities.Projectiles
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
-            if (Physics.Raycast(ray, out hit, distance)) {
+            if (Physics.Raycast(ray, out hit, distance))
+            {
                 Debug.DrawLine(ray.origin, hit.point, Color.red, 10f);
                 transform.position = hit.point;
+
+                return;
             }
+
+            Destroy(gameObject);
         }
     }
 }
