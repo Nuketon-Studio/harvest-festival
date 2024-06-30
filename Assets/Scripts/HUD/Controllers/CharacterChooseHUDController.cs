@@ -30,7 +30,6 @@ namespace HarvestFestival.HUD.Controllers
 
         public void CharacterSelect() {
             GameManager.Instance.SetCharacterStats(_characterSelected.Character);
-            GameManager.Instance.menuManager.Open(0);
         }
     }
 }

@@ -11,6 +11,7 @@ using Nakama;
 using Nakama.TinyJson;
 using UnityEngine;
 
+// TODO -  esse script pode ser dividido em 2 onde teremos um controller e um HUD script
 namespace HarvestFestival.HUD.Controllers
 {
     class FindMatchHUDController : MonoBehaviour
@@ -99,7 +100,7 @@ namespace HarvestFestival.HUD.Controllers
 
                     CheckAllPlayerIsReady();
                     break;
-                case OpCodeType.UPDATE_CHARACTER:
+                case OpCodeType.MATCH_UPDATE_CHARACTER:
                     UpdateCharacterNetworkEntity characterData = JsonParser.FromJson<UpdateCharacterNetworkEntity>(state);
 
                     var player = _playerMatchs.Find(f => f.userId == characterData.userId);
@@ -153,13 +154,18 @@ namespace HarvestFestival.HUD.Controllers
 
             // send information to all player what character this player local
             await NetworkHelper.Send<UpdateCharacterNetworkEntity>(
-                OpCodeType.UPDATE_CHARACTER,
+                OpCodeType.MATCH_UPDATE_CHARACTER,
                 new UpdateCharacterNetworkEntity
                 {
                     characterName = GameManager.Instance.CharacterStats.displayName,
                     userId = GameManager.Instance.UserId
                 }
             );
+
+            // select first player to has host in game
+            var firstUser = match.Users.First();
+
+            if(GameManager.Instance.IsLocal(firstUser.Presence.UserId)) GameManager.Instance.SetIsHost(true);
         }
         #endregion
     }

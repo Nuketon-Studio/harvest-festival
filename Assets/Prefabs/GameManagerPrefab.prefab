@@ -55,6 +55,7 @@ MonoBehaviour:
   Characters:
   - {fileID: 11400000, guid: 1a5cb6e4e7ccadd4bba3c464bf926f8f, type: 2}
   - {fileID: 11400000, guid: 2956f417744a6b0448eeab3bad0c8bbb, type: 2}
+  <GameSettings>k__BackingField: {fileID: 11400000, guid: 3edfa8b2ed21c954a848c626c561d9ad, type: 2}
 --- !u!114 &5113010377410518130
 MonoBehaviour:
   m_ObjectHideFlags: 0

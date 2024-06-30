@@ -12,7 +12,8 @@ public class CameraManager : MonoBehaviour
 
     private CameraRotation _cameraRotation;
     private bool _attachedCamInTarget = false;
-    private Transform _target;
+    [SerializeField]private Transform _target;
+    private bool _turnOffAttachment = false;
 
     public void Attachment(Transform target)
     {
@@ -25,9 +26,18 @@ public class CameraManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
     }
 
+    // metodo para ligar e desligar o turnoff da camera seguindo
+    public void TurnToggleCamera()
+    {
+        _turnOffAttachment = !_turnOffAttachment;
+
+        if(_turnOffAttachment) Cursor.lockState = CursorLockMode.None;
+        else Cursor.lockState = CursorLockMode.Locked;
+    }
+
     public void RotateTargetWithCamera()
     {
-        if (_input.sqrMagnitude == 0) return;
+        if (_input.sqrMagnitude == 0 || _turnOffAttachment) return;
 
         var camRotate = new Vector3(0, transform.eulerAngles.y, 0);
         _target.transform.rotation = Quaternion.RotateTowards(_target.transform.rotation, Quaternion.Euler(camRotate), 400f);
@@ -35,7 +45,7 @@ public class CameraManager : MonoBehaviour
 
     private void Update()
     {
-        if (!_attachedCamInTarget) return;
+        if (!_attachedCamInTarget || _turnOffAttachment) return;
 
         _input = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
 
@@ -48,7 +58,7 @@ public class CameraManager : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (!_attachedCamInTarget) return;
+        if (!_attachedCamInTarget || _turnOffAttachment) return;
 
         transform.eulerAngles = new Vector3(_cameraRotation.Pitch, _cameraRotation.Yaw, 0.0f);
         transform.position = _target.position - transform.forward * _distanceToPlayer + new Vector3(cameraDistance.x, cameraDistance.y, 0);

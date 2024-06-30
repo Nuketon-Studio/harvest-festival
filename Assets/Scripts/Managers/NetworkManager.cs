@@ -5,9 +5,9 @@ using Nakama;
 using Nakama.TinyJson;
 using UnityEngine;
 
-namespace HarvestFestival.Network
+namespace HarvestFestival.Managers
 {
-    public class NakamaConnection : MonoBehaviour
+    public class NetworkManager : MonoBehaviour
     {
         private const string _clientRefName = "nakama.clientId";
         private const string _sessionTokenName = "nakama.SessionToken";
@@ -89,6 +89,10 @@ namespace HarvestFestival.Network
         public async Task ExitMatch()
         {
             await Socket.RemoveMatchmakerAsync(_ticket);
+        }
+
+        public async Task Logoff() {
+            await Client.DeleteAccountAsync(Session);
         }
     }
 }

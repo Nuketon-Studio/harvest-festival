@@ -3,7 +3,6 @@ using System.Text;
 using System.Threading.Tasks;
 using HarvestFestival.Entities.Network;
 using HarvestFestival.Managers;
-using HarvestFestival.Network;
 using HarvestFestival.SO;
 using HarvestFestival.Types;
 using HarvestFestival.Utils;
@@ -16,7 +15,7 @@ namespace HarvestFestival
 {
     class GameManager : Singleton<GameManager>
     {
-        public NakamaConnection Connection;
+        public NetworkManager Connection;
         public MenuManager menuManager;
         public EventManager eventManager;
         public MatchManager matchManager;
@@ -26,8 +25,12 @@ namespace HarvestFestival
 
         public string UserId { get; private set; }
         public CharacterSO CharacterStats { get; private set; }
+        [field: SerializeField] public GameSettingSO GameSettings { get; private set; }
+
+        public bool IsHost { get; private set; } = false;
 
         public void SetUserId(string userId) => UserId = userId;
+        public void SetIsHost(bool isHost) => IsHost = isHost;
         public void SetCharacterStats(CharacterSO character) => CharacterStats = character;
 
         #region Validators
@@ -38,11 +41,13 @@ namespace HarvestFestival
         public async void StartGame(List<UserLobbyNetworkEntity> players)
         {
             SceneManager.LoadScene((int)SceneType.GamePlay);
+            matchManager.Init();
 
-            // add splash scene
+            await Task.Delay(GameSettings.timeLoadBeforeStartGameplay);
 
-            await Task.Delay(2000);
-            matchManager.AddPlayers(players);
+            matchManager.SetPlayerLobbyInfo(players);
+            
+            if(IsHost) matchManager.HostAddPlayers(players);
         }
         #endregion
 
@@ -76,6 +81,18 @@ namespace HarvestFestival
             eventManager.OnReceivedMatchState += OnReceivedMatchState;
 
             DontDestroyOnLoad(gameObject);
+        }
+
+        // remover depois ta pra apertar i e remover a conta no servidor
+        void Update()
+        {
+            if (SceneManager.GetActiveScene().buildIndex == 1 && Input.GetKeyDown(KeyCode.I)) Exit();
+
+            if (SceneManager.GetActiveScene().buildIndex == 1 && Input.GetKeyDown(KeyCode.P))
+            {
+                var camera = GameObject.Find("Camera/Main Camera")?.GetComponent<CameraManager>();
+                camera?.TurnToggleCamera();
+            }
         }
         #endregion
     }

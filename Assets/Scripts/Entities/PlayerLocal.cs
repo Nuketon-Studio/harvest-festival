@@ -1,6 +1,7 @@
 using HarvestFestival.Controllers;
 using HarvestFestival.Entities.Network;
-using HarvestFestival.SO;
+using HarvestFestival.Helpers;
+using HarvestFestival.Types;
 using UnityEngine;
 
 namespace HarvestFestival.Entities
@@ -8,6 +9,9 @@ namespace HarvestFestival.Entities
     [RequireComponent(typeof(PlayerController))]
     class PlayerLocal : Character
     {
+        private PositionNetworkEntity _currentPosition;
+        private Quaternion _lastRotate;
+
         #region Actions
         private void Move()
         {
@@ -16,15 +20,15 @@ namespace HarvestFestival.Entities
 
             var dir = transform.Find("Body").transform.forward * vertical + transform.Find("Body").transform.right * horizontal;
 
-            var position = new PositionNetworkEntity
+            _currentPosition = new PositionNetworkEntity
             {
                 x = dir.x,
                 y = 0,
                 z = dir.z,
             };
 
-            if(horizontal != 0 || vertical != 0)
-                playerController.Move(position);
+            if (horizontal != 0 || vertical != 0)
+                playerController.Move(_currentPosition);
         }
 
         private void Attack()
@@ -51,6 +55,24 @@ namespace HarvestFestival.Entities
         {
             Move();
             Attack();
+        }
+
+        private async void LateUpdate()
+        {
+            if (_currentPosition is not null && _currentPosition.toVector3() != Vector3.zero)
+                await NetworkHelper.Send<PositionNetworkEntity>(OpCodeType.PLAYER_MOVE, _currentPosition);
+
+            if (_lastRotate != transform.rotation) {
+                var rotate = new RotateNetworkEntity
+                {
+                    x = transform.rotation.x,
+                    y = transform.rotation.y,
+                    z = transform.rotation.z,
+                };
+
+                if (rotate.IsChange()) await NetworkHelper.Send<RotateNetworkEntity>(OpCodeType.PLAYER_ROTATE, rotate);
+            }
+
         }
         #endregion
     }
