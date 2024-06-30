@@ -77,7 +77,7 @@ namespace HarvestFestival.Network
             await Client.UpdateAccountAsync(Session, name, name);
 
             // assign in match
-            var matchmakerTicket = await Socket.AddMatchmakerAsync();
+            var matchmakerTicket = await Socket.AddMatchmakerAsync("*", 2, 2);
             _ticket = matchmakerTicket.Ticket;
 
             Socket.ReceivedMatchmakerMatched += GameManager.Instance.eventManager.ReceivedMatchmakerMatchedEvent;

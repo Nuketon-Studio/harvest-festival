@@ -3,7 +3,7 @@ using System;
 namespace HarvestFestival.Entities.Network
 {
     [Serializable]
-    class StartGameEntityNetwork
+    class StartGameNetworkEntity
     {
         public int sceneIndex;
     }

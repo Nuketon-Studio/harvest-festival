@@ -8,28 +8,28 @@ namespace HarvestFestival.Entities
     [RequireComponent(typeof(PlayerController))]
     class PlayerLocal : Character
     {
-        [SerializeField] private PlayerController playerController;
-        [SerializeField] private CharacterSO characterSO;
-
-        private int _hp;
-
         #region Actions
         private void Move()
         {
             var horizontal = Input.GetAxis("Horizontal");
             var vertical = Input.GetAxis("Vertical");
 
-            var position = new PositionEntityNetwork {
-                x = horizontal,
+            var dir = transform.Find("Body").transform.forward * vertical + transform.Find("Body").transform.right * horizontal;
+
+            var position = new PositionNetworkEntity
+            {
+                x = dir.x,
                 y = 0,
-                z = vertical * Mathf.Sign(transform.position.z - Camera.main.transform.position.z),
+                z = dir.z,
             };
 
-            playerController.Move(position);
+            if(horizontal != 0 || vertical != 0)
+                playerController.Move(position);
         }
 
-        private void Attack() {
-            if(Input.GetMouseButtonDown(0)) 
+        private void Attack()
+        {
+            if (Input.GetMouseButtonDown(0))
                 playerController.Attack("");
         }
 
@@ -47,13 +47,6 @@ namespace HarvestFestival.Entities
         #endregion
 
         #region Unity Events
-        void Start()
-        {
-            playerController?.Init(characterSO);
-            _hp = characterSO.hp;
-
-            playerController = GetComponent<PlayerController>();
-        }
         void Update()
         {
             Move();

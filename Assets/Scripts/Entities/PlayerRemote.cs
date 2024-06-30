@@ -8,11 +8,6 @@ namespace HarvestFestival.Entities
     [RequireComponent(typeof(PlayerController))]
     class PlayerRemote : Character
     {
-        [SerializeField] private PlayerController playerController;
-        [SerializeField] private CharacterSO characterSO;
-
-        private int _hp;
-
         #region Actions
         private void Move()
         {
@@ -36,13 +31,6 @@ namespace HarvestFestival.Entities
         #endregion
 
         #region Unity Events
-        void Start()
-        {
-            playerController?.Init(characterSO);
-            _hp = characterSO.hp;
-
-            playerController = GetComponent<PlayerController>();
-        }
         void Update()
         {
             Move();

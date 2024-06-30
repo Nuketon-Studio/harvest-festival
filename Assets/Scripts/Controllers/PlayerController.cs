@@ -10,7 +10,7 @@ namespace HarvestFestival.Controllers
     class PlayerController : MonoBehaviour
     {
         private bool _canMove = true;
-        private PositionEntityNetwork _position;
+        private PositionNetworkEntity _position;
         private CharacterSO _character;
 
         public void Init(CharacterSO character)
@@ -23,7 +23,7 @@ namespace HarvestFestival.Controllers
         #endregion
 
         #region Actions
-        public void Move(PositionEntityNetwork position)
+        public void Move(PositionNetworkEntity position)
         {
             _position = position;
 

@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using System.Text;
-using HarvestFestival.Entities;
+using System.Threading.Tasks;
 using HarvestFestival.Entities.Network;
 using HarvestFestival.Managers;
 using HarvestFestival.Network;
+using HarvestFestival.SO;
 using HarvestFestival.Types;
 using HarvestFestival.Utils;
 using Nakama;
@@ -17,33 +19,42 @@ namespace HarvestFestival
         public NakamaConnection Connection;
         public MenuManager menuManager;
         public EventManager eventManager;
+        public MatchManager matchManager;
 
-        public string MatchId { get; private set; }
+        [Header("Configs")]
+        public List<CharacterSO> Characters;
+
         public string UserId { get; private set; }
+        public CharacterSO CharacterStats { get; private set; }
 
-        public void SetMatchId(string matchId) => MatchId = matchId;
         public void SetUserId(string userId) => UserId = userId;
+        public void SetCharacterStats(CharacterSO character) => CharacterStats = character;
 
-        void Start()
+        #region Validators
+        public bool IsLocal(string userId) => userId == UserId;
+        #endregion
+
+        #region Flow Game
+        public async void StartGame(List<UserLobbyNetworkEntity> players)
         {
-            Connection.Connect();
-            eventManager.OnReceivedMatchState += OnReceivedMatchState;
+            SceneManager.LoadScene((int)SceneType.GamePlay);
 
+            // add splash scene
 
-            DontDestroyOnLoad(gameObject);
+            await Task.Delay(2000);
+            matchManager.AddPlayers(players);
         }
+        #endregion
 
-        public void ChangeScene(int index)
-        {
-            SceneManager.LoadScene(index);
-        }
-
+        #region System
         public async void Exit()
         {
             await Connection.Client.DeleteAccountAsync(Connection.Session);
 
+            UnityEditor.EditorApplication.isPlaying = false;
             Application.Quit();
         }
+        #endregion
 
         #region NetworkEvents
         private void OnReceivedMatchState(IMatchState matchState)
@@ -52,11 +63,19 @@ namespace HarvestFestival
 
             switch (matchState.OpCode)
             {
-                case OpCodeType.START_GAME:
-                    StartGameEntityNetwork data = JsonParser.FromJson<StartGameEntityNetwork>(jsonUtf8);
-                    ChangeScene(data.sceneIndex);
+                default:
                     break;
             }
+        }
+        #endregion
+
+        #region Unity Event
+        void Start()
+        {
+            Connection.Connect();
+            eventManager.OnReceivedMatchState += OnReceivedMatchState;
+
+            DontDestroyOnLoad(gameObject);
         }
         #endregion
     }

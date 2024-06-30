@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class CameraManager : MonoBehaviour
 {
-    [SerializeField] private Transform target;
     private float _distanceToPlayer;
     private Vector2 _input;
 
@@ -12,10 +11,15 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private CameraDistance cameraDistance;
 
     private CameraRotation _cameraRotation;
+    private bool _attachedCamInTarget = false;
+    private Transform _target;
 
-    private void Awake()
+    public void Attachment(Transform target)
     {
-        _distanceToPlayer = Vector3.Distance(transform.position, target.position);
+        _attachedCamInTarget = true;
+        _target = target;
+
+        _distanceToPlayer = Vector3.Distance(transform.position, _target.position);
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
@@ -26,11 +30,13 @@ public class CameraManager : MonoBehaviour
         if (_input.sqrMagnitude == 0) return;
 
         var camRotate = new Vector3(0, transform.eulerAngles.y, 0);
-        target.transform.rotation = Quaternion.RotateTowards(target.transform.rotation, Quaternion.Euler(camRotate), 400f);
+        _target.transform.rotation = Quaternion.RotateTowards(_target.transform.rotation, Quaternion.Euler(camRotate), 400f);
     }
 
     private void Update()
     {
+        if (!_attachedCamInTarget) return;
+
         _input = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
 
         _cameraRotation.Yaw += _input.x * mouseSensitivity.horizontal * BoolToInt(mouseSensitivity.invertHorizontal) * Time.deltaTime;
@@ -42,8 +48,10 @@ public class CameraManager : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (!_attachedCamInTarget) return;
+
         transform.eulerAngles = new Vector3(_cameraRotation.Pitch, _cameraRotation.Yaw, 0.0f);
-        transform.position = target.position - transform.forward * _distanceToPlayer + new Vector3(cameraDistance.x, cameraDistance.y,0);
+        transform.position = _target.position - transform.forward * _distanceToPlayer + new Vector3(cameraDistance.x, cameraDistance.y, 0);
     }
 
     private static int BoolToInt(bool b) => b ? 1 : -1;
@@ -72,7 +80,8 @@ public struct CameraAngle
 }
 
 [Serializable]
-public struct CameraDistance {
+public struct CameraDistance
+{
     [Range(-10, 10)]
     public float x;
     [Range(-10, 10)]

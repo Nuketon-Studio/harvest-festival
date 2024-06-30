@@ -5,6 +5,7 @@ using HarvestFestival.Entities;
 using HarvestFestival.Entities.Network;
 using HarvestFestival.Helpers;
 using HarvestFestival.HUD.Item;
+using HarvestFestival.SO;
 using HarvestFestival.Types;
 using Nakama;
 using Nakama.TinyJson;
@@ -18,7 +19,7 @@ namespace HarvestFestival.HUD.Controllers
         [SerializeField] private GameObject containerListPrefab;
         [SerializeField] private GameObject displayWaitAnotherPlayerPrefab;
 
-        private List<PlayerMatch> _playerMatchs = new List<PlayerMatch>();
+        private List<UserLobbyNetworkEntity> _playerMatchs = new List<UserLobbyNetworkEntity>();
         private bool _isReady = false;
         private string _username;
 
@@ -42,19 +43,21 @@ namespace HarvestFestival.HUD.Controllers
         {
             _isReady = !_isReady;
 
-            var status = new MatchStatusEntityNetwork
+            var status = new MatchStatusNetworkEntity
             {
                 isReady = _isReady,
-                display = StatusMessage()
+                display = MatchStatusDisplay()
             };
 
             ChangeStatusUI(GameManager.Instance.UserId, status);
 
-            await CommunicationHelper.Send<MatchStatusEntityNetwork>(OpCodeType.MATCH_STATUS, status);
+            await NetworkHelper.Send<MatchStatusNetworkEntity>(OpCodeType.MATCH_STATUS, status);
+            
+            CheckAllPlayerIsReady();
         }
         #endregion
 
-        private string StatusMessage()
+        private string MatchStatusDisplay()
         {
             if (_isReady) return "Ready!";
 
@@ -62,9 +65,9 @@ namespace HarvestFestival.HUD.Controllers
         }
 
 
-        private void ChangeStatusUI(string userId, MatchStatusEntityNetwork status)
+        private void ChangeStatusUI(string userId, MatchStatusNetworkEntity status)
         {
-            var player = _playerMatchs.Find(f => f.player.Id == userId);
+            var player = _playerMatchs.Find(f => f.account.Id == userId);
 
             if (player != null)
             {
@@ -73,38 +76,43 @@ namespace HarvestFestival.HUD.Controllers
             }
         }
 
-        private async void CheckAllPlayerIsReady()
+        private void CheckAllPlayerIsReady()
         {
             var isAllReady = _playerMatchs.All(a => a.isReady);
 
-            if (isAllReady)
-            {
-                var data = new StartGameEntityNetwork { sceneIndex = 1 };
-
-                GameManager.Instance.ChangeScene(data.sceneIndex); // change localhost
-                await CommunicationHelper.Send<StartGameEntityNetwork>(OpCodeType.START_GAME, data);
-            }
+            if (isAllReady) GameManager.Instance.StartGame(_playerMatchs);
         }
 
         #region network Event
         private void OnReceivedMatchState(IMatchState matchState)
         {
+            var state = matchState.State.Length > 0 ? Encoding.UTF8.GetString(matchState.State) : null;
+
+            if (state == null) return;
+
             switch (matchState.OpCode)
             {
                 case OpCodeType.MATCH_STATUS:
-                    var stateJson = Encoding.UTF8.GetString(matchState.State);
-                    var state = JsonParser.FromJson<MatchStatusEntityNetwork>(stateJson);
+                    var data = JsonParser.FromJson<MatchStatusNetworkEntity>(state);
 
-                    ChangeStatusUI(matchState.UserPresence.UserId, state);
+                    ChangeStatusUI(matchState.UserPresence.UserId, data);
 
                     CheckAllPlayerIsReady();
+                    break;
+                case OpCodeType.UPDATE_CHARACTER:
+                    UpdateCharacterNetworkEntity characterData = JsonParser.FromJson<UpdateCharacterNetworkEntity>(state);
+
+                    var player = _playerMatchs.Find(f => f.userId == characterData.userId);
+
+                    if (player is not null) player.characterStats = GameManager.Instance.Characters.Find(f => f.displayName == characterData.characterName);
+
                     break;
             }
         }
 
         private void OnReceivedMatchPresence(IMatchPresenceEvent match)
         {
-            GameManager.Instance.SetMatchId(match.MatchId);
+            GameManager.Instance.matchManager.SetMatchId(match.MatchId);
             displayWaitAnotherPlayerPrefab.gameObject.SetActive(false);
         }
 
@@ -129,26 +137,30 @@ namespace HarvestFestival.HUD.Controllers
                 var instance = Instantiate(playerItemListPrefab);
                 instance.transform.SetParent(containerListPrefab.transform);
 
-                instance.GetComponent<ElementMatchItemHUD>().Init(user.DisplayName, StatusMessage());
+                instance.GetComponent<ElementMatchItemHUD>().Init(user.DisplayName, MatchStatusDisplay());
 
-                _playerMatchs.Add(new PlayerMatch(user, "", instance));
+                _playerMatchs.Add(new UserLobbyNetworkEntity
+                {
+                    account = user,
+                    userId = user.Id,
+                    instance = instance,
+                });
             }
+
+            // add the character stats to player local
+            var userLocal = _playerMatchs.Find(f => GameManager.Instance.IsLocal(f.userId));
+            userLocal.characterStats = GameManager.Instance.CharacterStats;
+
+            // send information to all player what character this player local
+            await NetworkHelper.Send<UpdateCharacterNetworkEntity>(
+                OpCodeType.UPDATE_CHARACTER,
+                new UpdateCharacterNetworkEntity
+                {
+                    characterName = GameManager.Instance.CharacterStats.displayName,
+                    userId = GameManager.Instance.UserId
+                }
+            );
         }
         #endregion
-    }
-
-    class PlayerMatch
-    {
-        public GameObject instance;
-        public IApiUser player;
-        public string sessionId;
-        public bool isReady = false;
-
-        public PlayerMatch(IApiUser user, string _sessionId, GameObject _instance)
-        {
-            instance = _instance;
-            player = user;
-            sessionId = _sessionId;
-        }
     }
 }

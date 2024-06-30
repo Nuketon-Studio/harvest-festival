@@ -3,7 +3,7 @@ using System;
 namespace HarvestFestival.Entities.Network
 {
     [Serializable]
-    class MatchStatusEntityNetwork
+    class MatchStatusNetworkEntity
     {
         public bool isReady;
         public string display;
