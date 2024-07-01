@@ -12,5 +12,7 @@ namespace HarvestFestival.Types
         public const long GAME_PAUSE = 22;
         public const long PLAYER_MOVE = 23;
         public const long PLAYER_ROTATE = 24;
+        public const long PLAYER_ATTACK_LIGHT = 25;
+        public const long PLAYER_ATTACK_HARD = 26;
     }
 }

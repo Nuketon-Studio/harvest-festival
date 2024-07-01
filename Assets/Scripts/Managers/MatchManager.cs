@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using HarvestFestival.Entities;
 using HarvestFestival.Entities.Network;
 using HarvestFestival.Helpers;
@@ -38,10 +39,7 @@ namespace HarvestFestival.Managers
                 else
                     character = Instantiate(playerRemotePrefab).GetComponent<PlayerRemote>();
 
-                character.Init(userLobby.characterStats);
-
-                var camera = GameObject.Find("Camera/Main Camera")?.GetComponent<CameraManager>();
-                if (camera && isLocal) camera.Attachment(character.transform);
+                character.Init(userLobby.characterStats, userLobby.userId);
 
                 players.Add(new UserNetworkEntity
                 {
@@ -50,6 +48,8 @@ namespace HarvestFestival.Managers
                     userId = userLobby.userId,
                     account = userLobby.account
                 });
+
+                await Task.Delay(100);
 
                 await NetworkHelper.Send<SpawnPlayerNetworkEntity>(OpCodeType.MATCH_SPAWN_PLAYER, new SpawnPlayerNetworkEntity
                 {
@@ -79,12 +79,8 @@ namespace HarvestFestival.Managers
             else
                 character = Instantiate(playerRemotePrefab).GetComponent<PlayerRemote>();
 
-            character.Init(userLobbyInfo.characterStats);
+            character.Init(userLobbyInfo.characterStats, playerRemote.userId);
             character.transform.position = playerRemote.toVector3();
-
-            var camera = GameObject.Find("Camera/Main Camera")?.GetComponent<CameraManager>();
-            
-            if (camera && isLocal) camera.Attachment(character.transform);
 
             players.Add(new UserNetworkEntity
             {

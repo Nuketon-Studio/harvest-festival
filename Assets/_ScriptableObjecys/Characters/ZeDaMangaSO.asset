@@ -16,3 +16,4 @@ MonoBehaviour:
   hp: 100
   speed: 10
   speedRun: 20
+  projectile: Projectiles/MelonPrefab

@@ -4,9 +4,8 @@ using HarvestFestival.SO;
 namespace HarvestFestival.Entities.Network
 {
     [Serializable]
-    class UpdateCharacterNetworkEntity
+    class UpdateCharacterNetworkEntity : AutorityNetworkEntity
     {
         public string characterName;
-        public string userId;
     }
 }

@@ -163,7 +163,7 @@ namespace HarvestFestival.HUD.Controllers
             );
 
             // select first player to has host in game
-            var firstUser = match.Users.First();
+            var firstUser = match.Users.OrderBy(x => x.Presence.SessionId).First();
 
             if(GameManager.Instance.IsLocal(firstUser.Presence.UserId)) GameManager.Instance.SetIsHost(true);
         }

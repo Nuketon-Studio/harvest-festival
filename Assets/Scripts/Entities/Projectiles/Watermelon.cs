@@ -5,9 +5,7 @@ namespace HarvestFestival.Entities.Projectiles
 {
     class Watermelon : Projectile
     {
-
-        public float distance = 10;
-        public float timeToDownProjectile = 1f;
+        public float force = 1f;
         public int damage = 50;
 
         private void OnTriggerEnter(Collider other)
@@ -20,25 +18,14 @@ namespace HarvestFestival.Entities.Projectiles
             Destroy(gameObject, 3f);
         }
 
-        public override void Init(GameObject shooter)
+        public override void Init(GameObject shooter, Vector3 direction)
         {
-            transform.position = shooter.transform.position;
+            transform.position = shooter.transform.position + shooter.transform.forward * .5f;
+            
+            Vector3 directionForce = direction * force;
+            directionForce.y += 5.5f; // deslocamento pra ir em direçao a marcaçao da tela AIM
 
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            float distanceShoot;
-
-            if (Physics.Raycast(ray, out hit, distance))
-            {
-                distanceShoot = Vector3.Distance(hit.point, shooter.transform.position);
-
-                Debug.DrawLine(shooter.transform.position, hit.point, Color.red, 10f);
-                transform.DOJump(hit.point, distanceShoot / 2, 1, distanceShoot / timeToDownProjectile);
-                return;
-            }
-
-            distanceShoot = Vector3.Distance(Camera.main.transform.TransformDirection(Vector3.forward) * distance, shooter.transform.position) / 2;
-            transform.DOJump(Camera.main.transform.TransformDirection(Vector3.forward) * distance, distanceShoot / 2, 1, distanceShoot / timeToDownProjectile);
+            GetComponent<Rigidbody>().AddForce(directionForce, ForceMode.Impulse);
         }
     }
 }

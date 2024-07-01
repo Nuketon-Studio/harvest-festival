@@ -3,13 +3,12 @@ using Nakama;
 using UnityEngine;
 
 namespace HarvestFestival.Entities.Network {
-    class UserLobbyNetworkEntity
+    class UserLobbyNetworkEntity: AutorityNetworkEntity
     {
         public GameObject instance;
         public IApiUser account;
         public CharacterSO characterStats;
 
-        public string userId;
         public bool isReady = false;
     }
 }

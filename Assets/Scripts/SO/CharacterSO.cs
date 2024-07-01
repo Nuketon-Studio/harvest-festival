@@ -1,4 +1,4 @@
-using Nakama;
+using HarvestFestival.Entities.Projectiles;
 using UnityEngine;
 
 namespace HarvestFestival.SO
@@ -10,5 +10,7 @@ namespace HarvestFestival.SO
         public int hp;
         public float speed;
         public float speedRun;
+
+        public string projectile;
     }
 }

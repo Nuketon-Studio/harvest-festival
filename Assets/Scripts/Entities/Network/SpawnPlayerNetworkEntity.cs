@@ -4,7 +4,7 @@ using UnityEngine;
 namespace HarvestFestival.Entities.Network
 {
     [Serializable]
-    class PositionNetworkEntity: AutorityNetworkEntity
+    class SpawnPlayerNetworkEntity : AutorityNetworkEntity
     {
         public float x;
         public float y;

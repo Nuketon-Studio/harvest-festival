@@ -10,12 +10,14 @@ namespace HarvestFestival.Entities
         [SerializeField] protected CharacterSO stats;
 
         protected int _hp;
+        protected string _userId;
         public virtual void Hit(int damage) { }
 
-        public void Init(CharacterSO character)
+        public virtual void Init(CharacterSO character, string userId)
         {
             transform.position = new Vector3(Random.Range(-5, 5), 3, Random.Range(-5, 5));
             stats = character;
+            _userId = userId;
 
             playerController?.Init(stats);
             _hp = stats.hp;

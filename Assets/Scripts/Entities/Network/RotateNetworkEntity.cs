@@ -4,13 +4,13 @@ using UnityEngine;
 namespace HarvestFestival.Entities.Network
 {
     [Serializable]
-    class RotateNetworkEntity
+    class RotateNetworkEntity: AutorityNetworkEntity
     {
         public float x;
         public float y;
         public float z;
 
-        public Quaternion toEuler() => Quaternion.Euler(x, y, z);
+        public Vector3 toVector3() => new Vector3(x, y, z);
         public bool IsChange() => new Vector3(x, y, z) != Vector3.zero;
     }
 }

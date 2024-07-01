@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   displayName: Gil Banana
   hp: 100
-  speed: 20
-  speedRun: 40
+  speed: 10
+  speedRun: 20
+  projectile: Projectiles/MelonPrefab

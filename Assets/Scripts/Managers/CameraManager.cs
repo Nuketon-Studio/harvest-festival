@@ -3,24 +3,23 @@ using UnityEngine;
 
 public class CameraManager : MonoBehaviour
 {
-    private float _distanceToPlayer;
     private Vector2 _input;
 
     [SerializeField] private MouseSensitivity mouseSensitivity;
     [SerializeField] private CameraAngle cameraAngle;
-    [SerializeField] private CameraDistance cameraDistance;
+
+    [Range(-20, 20)]
+    [SerializeField] private float cameraDistance = 7;
 
     private CameraRotation _cameraRotation;
     private bool _attachedCamInTarget = false;
-    [SerializeField]private Transform _target;
+    private Transform _target;
     private bool _turnOffAttachment = false;
 
     public void Attachment(Transform target)
     {
         _attachedCamInTarget = true;
         _target = target;
-
-        _distanceToPlayer = Vector3.Distance(transform.position, _target.position);
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
@@ -39,8 +38,7 @@ public class CameraManager : MonoBehaviour
     {
         if (_input.sqrMagnitude == 0 || _turnOffAttachment) return;
 
-        var camRotate = new Vector3(0, transform.eulerAngles.y, 0);
-        _target.transform.rotation = Quaternion.RotateTowards(_target.transform.rotation, Quaternion.Euler(camRotate), 400f);
+        _target.parent.transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0);
     }
 
     private void Update()
@@ -61,7 +59,7 @@ public class CameraManager : MonoBehaviour
         if (!_attachedCamInTarget || _turnOffAttachment) return;
 
         transform.eulerAngles = new Vector3(_cameraRotation.Pitch, _cameraRotation.Yaw, 0.0f);
-        transform.position = _target.position - transform.forward * _distanceToPlayer + new Vector3(cameraDistance.x, cameraDistance.y, 0);
+        transform.position = _target.position - transform.forward * cameraDistance;
     }
 
     private static int BoolToInt(bool b) => b ? 1 : -1;
@@ -87,13 +85,4 @@ public struct CameraAngle
 {
     public float min;
     public float max;
-}
-
-[Serializable]
-public struct CameraDistance
-{
-    [Range(-10, 10)]
-    public float x;
-    [Range(-10, 10)]
-    public float y;
 }

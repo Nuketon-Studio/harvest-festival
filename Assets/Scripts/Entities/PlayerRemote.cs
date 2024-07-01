@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text;
 using HarvestFestival.Controllers;
 using HarvestFestival.Entities.Network;
@@ -13,11 +14,6 @@ namespace HarvestFestival.Entities
     class PlayerRemote : Character
     {
         #region Actions
-        private void Move()
-        {
-            // playerController.Move(position);
-        }
-
         private void Attack() {
             // if(Input.GetMouseButtonDown(0)) 
             //     playerController.Attack("");
@@ -38,6 +34,9 @@ namespace HarvestFestival.Entities
         private void OnReceiveMatchState(IMatchState matchState)
         {
             var jsonUtf8 = Encoding.UTF8.GetString(matchState.State);
+            var content = JsonParser.FromJson<Dictionary<string, string>>(jsonUtf8);
+
+            if (content.ContainsKey("userId") && content["userId"] != _userId) return;
 
             switch (matchState.OpCode)
             {
@@ -49,22 +48,27 @@ namespace HarvestFestival.Entities
                 case OpCodeType.PLAYER_ROTATE:
                     RotateNetworkEntity rotate = JsonParser.FromJson<RotateNetworkEntity>(jsonUtf8);
 
-                    transform.rotation = rotate.toEuler();
+                    transform.eulerAngles = rotate.toVector3();
+                    break;
+                case OpCodeType.PLAYER_ATTACK_LIGHT:
+                    AttackNetworkEntity attackLight = JsonParser.FromJson<AttackNetworkEntity>(jsonUtf8);
+
+                    playerController.Attack(attackLight.toVector3(), attackLight.prefabName);
                     break;
             }
         }
         #endregion
 
         #region Unity Events
-        void Update()
-        {
-            Move();
-            Attack();
-        }
 
         void Start()
         {
             GameManager.Instance.Connection.Socket.ReceivedMatchState += OnReceiveMatchState;
+        }
+
+        void OnDestroy()
+        {
+            GameManager.Instance.Connection.Socket.ReceivedMatchState -= OnReceiveMatchState;
         }
         #endregion
     }

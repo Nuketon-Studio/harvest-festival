@@ -1,8 +1,6 @@
-using HarvestFestival.Entities;
 using HarvestFestival.Entities.Network;
 using HarvestFestival.Entities.Projectiles;
 using HarvestFestival.SO;
-using ParrelSync;
 using UnityEngine;
 
 namespace HarvestFestival.Controllers
@@ -32,8 +30,15 @@ namespace HarvestFestival.Controllers
             transform.Translate(_position.toVector3() * _character.speed * Time.deltaTime);
         }
 
-        public void Attack(string prefab) {
-            Projectile.Fire(gameObject, prefab);
+        public void Jump()
+        {
+            if (!_canMove) return;
+
+            transform.GetComponent<Rigidbody>().AddForce(Vector3.up * _character.speed, ForceMode.Impulse);
+        }
+
+        public void Attack(Vector3 direction, string prefabName) {
+            Projectile.Fire(gameObject, direction, prefabName);
         }
         #endregion
     }
