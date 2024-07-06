@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 3329260078784244130}
   - component: {fileID: -6072621000965795567}
   m_Layer: 0
-  m_Name: MelonPrefab
+  m_Name: WatermelonPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

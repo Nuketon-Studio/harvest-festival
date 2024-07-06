@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using HarvestFestival.Controllers;
 using HarvestFestival.Entities.Network;
 using HarvestFestival.Helpers;
@@ -13,10 +14,13 @@ namespace HarvestFestival.Entities
         [Header("Debug")]
         [SerializeField] private bool isOffline = false;
 
+        [SerializeField] private Animator animator;
+
         private PositionNetworkEntity _currentPosition = new PositionNetworkEntity { };
         private Quaternion _lastRotate;
         private bool _isInputMove = false;
         private bool _isFalling = false;
+        private GameObject _skin;
 
         public override void Init(CharacterSO character, string userId)
         {
@@ -35,6 +39,7 @@ namespace HarvestFestival.Entities
             if (horizontal == 0 && vertical == 0)
             {
                 _isInputMove = false;
+                animator.SetBool("Walk", false);
                 return;
             }
 
@@ -46,36 +51,46 @@ namespace HarvestFestival.Entities
                 userId = GameManager.Instance?.UserId
             };
 
+            animator.SetBool("Walk", true);
             playerController.Move(_currentPosition);
             _isInputMove = true;
         }
 
-        private void Jump()
+        private async void Jump()
         {
             if (!Input.GetKeyDown(KeyCode.Space) || _isFalling) return;
 
             _isFalling = true;
+            animator.SetTrigger("Jump");
+            await Task.Delay(900);
             playerController.Jump();
         }
 
-        private async void Attack()
+        private void Attack()
         {
             if (Input.GetMouseButtonDown(0))
             {
-                var direction = Camera.main.transform.forward;
+                animator.SetTrigger("Attack");
 
-                playerController.Attack(direction, stats.projectile);
-
-                if (!isOffline)
-                    await NetworkHelper.Send<AttackNetworkEntity>(OpCodeType.PLAYER_ATTACK_LIGHT, new AttackNetworkEntity
-                    {
-                        userId = GameManager.Instance.UserId,
-                        prefabName = stats.projectile,
-                        x = direction.x,
-                        y = direction.y,
-                        z = direction.z,
-                    });
+                Invoke(nameof(Fire), .8f);
             }
+        }
+
+        public async void Fire()
+        {
+            var direction = Camera.main.transform.forward;
+
+            playerController.Attack(direction, stats.projectile);
+
+            if (!isOffline)
+                await NetworkHelper.Send<AttackNetworkEntity>(OpCodeType.PLAYER_ATTACK_LIGHT, new AttackNetworkEntity
+                {
+                    userId = GameManager.Instance.UserId,
+                    prefabName = stats.projectile,
+                    x = direction.x,
+                    y = direction.y,
+                    z = direction.z,
+                });
         }
 
         public override void Hit(int damage)
@@ -91,11 +106,29 @@ namespace HarvestFestival.Entities
         }
         #endregion
 
+        #region Callbacks Events
+        private void OnCollisionEnterCallback(GameObject other)
+        {
+            if (_isFalling)
+            {
+                animator.SetBool("Falling", false);
+                _isFalling = false;
+            }
+        }
+        #endregion
+
         #region Unity Events
-        // esse metodo é só para poder testar sem ta conectado
-        // quando abrir a cena direto p testar mecanica e tals no player
         void Start()
         {
+            _skin = Instantiate(stats.skin);
+            _skin.transform.SetParent(transform);
+
+            animator = _skin.GetComponent<Animator>();
+
+            _skin.GetComponent<Farmer>().OnCollisionEnterCallback += OnCollisionEnterCallback;
+
+            // esse metodo é só para poder testar sem ta conectado
+            // quando abrir a cena direto p testar mecanica e tals no player
             if (!isOffline) return;
 
             var camera = GameObject.Find("Camera/Main Camera")?.GetComponent<CameraManager>();

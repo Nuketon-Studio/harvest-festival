@@ -34,7 +34,7 @@ namespace HarvestFestival.Controllers
         {
             if (!_canMove) return;
 
-            transform.GetComponent<Rigidbody>().AddForce(Vector3.up * _character.speed, ForceMode.Impulse);
+            transform.GetComponentInChildren<Rigidbody>().AddForce(Vector3.up * _character.speed, ForceMode.Impulse);
         }
 
         public void Attack(Vector3 direction, string prefabName) {

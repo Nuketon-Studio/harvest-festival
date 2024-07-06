@@ -12,5 +12,6 @@ namespace HarvestFestival.SO
         public float speedRun;
 
         public string projectile;
+        public GameObject skin;
     }
 }
