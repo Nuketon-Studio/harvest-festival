@@ -3,6 +3,7 @@ using System.Text;
 using HarvestFestival.Controllers;
 using HarvestFestival.Entities.Network;
 using HarvestFestival.SO;
+using HarvestFestival.States;
 using HarvestFestival.Types;
 using Nakama;
 using Nakama.TinyJson;
@@ -13,19 +14,33 @@ namespace HarvestFestival.Entities
     [RequireComponent(typeof(PlayerController))]
     class PlayerRemote : Character
     {
+        private PlayerStateMachine _state;
+
+
+        public override void Init(CharacterSO character, string userId)
+        {
+            base.Init(character, userId);
+
+            _state = new PlayerStateMachine();
+            _state.OnChangeState += _skin.OnChangeState;
+        }
+
         #region Actions
-        private void Attack() {
+        private void Attack()
+        {
             // if(Input.GetMouseButtonDown(0)) 
             //     playerController.Attack("");
         }
 
-        public override void Hit(int damage) {
+        public override void Hit(int damage)
+        {
             _hp -= damage;
 
-            if(_hp <= 0) Die();
+            if (_hp <= 0) Die();
         }
 
-        private void Die() {
+        private void Die()
+        {
             Destroy(gameObject);
         }
         #endregion
@@ -33,6 +48,8 @@ namespace HarvestFestival.Entities
         #region Network Events
         private void OnReceiveMatchState(IMatchState matchState)
         {
+            if (_isOffline) return;
+
             var jsonUtf8 = Encoding.UTF8.GetString(matchState.State);
             var content = JsonParser.FromJson<Dictionary<string, string>>(jsonUtf8);
 
@@ -53,7 +70,10 @@ namespace HarvestFestival.Entities
                 case OpCodeType.PLAYER_ATTACK_LIGHT:
                     AttackNetworkEntity attackLight = JsonParser.FromJson<AttackNetworkEntity>(jsonUtf8);
 
-                    playerController.Attack(attackLight.toVector3(), attackLight.prefabName);
+                    // TODO - tentar pegar ou instanciar o prefab do projetil usando o nome que ta vindo,
+                    // achei melhor no SO adicionar o prefab do que o nome para poder chamar no reuquire, quem sabe posso montar 
+                    // de forma automatica para pdoer usar aqui e instanciar via resource, penso melhor depois.
+                    // playerController.Attack(attackLight.toVector3(), attackLight.prefabName);
                     break;
             }
         }
@@ -61,13 +81,23 @@ namespace HarvestFestival.Entities
 
         #region Unity Events
 
-        void Start()
+        protected override void Start()
         {
+            base.Start();
+
+            if (_isOffline)
+            {
+                Init(stats, "");
+                return;
+            }
+
             GameManager.Instance.Connection.Socket.ReceivedMatchState += OnReceiveMatchState;
         }
 
         void OnDestroy()
         {
+            if (_isOffline) return;
+
             GameManager.Instance.Connection.Socket.ReceivedMatchState -= OnReceiveMatchState;
         }
         #endregion

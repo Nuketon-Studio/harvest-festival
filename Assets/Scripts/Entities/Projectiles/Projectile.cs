@@ -4,10 +4,8 @@ namespace HarvestFestival.Entities.Projectiles
 {
     public class Projectile : MonoBehaviour
     {
-        public static void Fire(GameObject shooter, Vector3 direction, string namePrefab)
+        public static void Fire(GameObject shooter, Vector3 direction, GameObject prefab)
         {
-            var prefab = Resources.Load<GameObject>(namePrefab);
-
             if (prefab != null)
             {
                 var instance = Instantiate(prefab);

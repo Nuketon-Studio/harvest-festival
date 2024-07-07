@@ -37,7 +37,8 @@ namespace HarvestFestival.Controllers
             transform.GetComponentInChildren<Rigidbody>().AddForce(Vector3.up * _character.speed, ForceMode.Impulse);
         }
 
-        public void Attack(Vector3 direction, string prefabName) {
+        public void Attack(Vector3 direction, GameObject prefabName)
+        {
             Projectile.Fire(gameObject, direction, prefabName);
         }
         #endregion

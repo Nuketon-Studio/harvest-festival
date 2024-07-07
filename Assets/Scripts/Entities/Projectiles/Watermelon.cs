@@ -20,10 +20,9 @@ namespace HarvestFestival.Entities.Projectiles
 
         public override void Init(GameObject shooter, Vector3 direction)
         {
-            transform.position = shooter.transform.position + shooter.transform.forward * .5f;
-            
+            transform.position = shooter.transform.Find("CameraSpot/AIM").transform.position + shooter.transform.forward * .5f;
+
             Vector3 directionForce = direction * force;
-            directionForce.y += 5.5f; // deslocamento pra ir em direçao a marcaçao da tela AIM
 
             GetComponent<Rigidbody>().AddForce(directionForce, ForceMode.Impulse);
         }

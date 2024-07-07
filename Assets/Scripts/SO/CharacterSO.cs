@@ -1,5 +1,5 @@
-using HarvestFestival.Entities.Projectiles;
 using UnityEngine;
+using UnityEditor;
 
 namespace HarvestFestival.SO
 {
@@ -11,7 +11,15 @@ namespace HarvestFestival.SO
         public float speed;
         public float speedRun;
 
+        [HideInInspector]
         public string projectile;
-        public GameObject skin;
+        [HideInInspector]
+        public int projectileIndex;
+
+        [HideInInspector]
+        public string skin;
+        [HideInInspector]
+        public int skinIndex;
+
     }
 }
