@@ -8,15 +8,9 @@ namespace HarvestFestival.Entities
     public class Skin : MonoBehaviour
     {
         [SerializeField] private Animator animator;
-        public Action<GameObject> OnCollisionEnterCallback;
 
         private Action _attackCallback;
         private Action _jumpCallback;
-
-        private void OnCollisionEnter(Collision other)
-        {
-            OnCollisionEnterCallback(other.gameObject);
-        }
 
         public void OnChangeState(PlayerStateType state)
         {
@@ -57,10 +51,6 @@ namespace HarvestFestival.Entities
         #endregion
 
         #region Events trigged on animator
-        public void Talk()
-        {
-            Debug.Log("Opa acho que rolou agora emmmm");
-        }
 
         public void AnimationStepAttack()
         {

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8996000609093772524}
   - component: {fileID: 1858122913692584150}
   - component: {fileID: 5078774302142922358}
+  - component: {fileID: 13559556911045921}
   m_Layer: 0
   m_Name: PlayerRemotePrefab
   m_TagString: Untagged
@@ -58,4 +59,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerController: {fileID: 1858122913692584150}
+  hitUI: {fileID: 13559556911045921}
   stats: {fileID: 0}
+  _isOffline: 0
+--- !u!114 &13559556911045921
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3986181898531062119}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3d07bc4d66191942be270439a12ab5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

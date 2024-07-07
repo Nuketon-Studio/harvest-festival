@@ -63,7 +63,7 @@ namespace HarvestFestival.Entities
 
             _isFalling = true;
             _state.SetState(PlayerStateType.Jump);
-            
+
             _skin.WaitMomentAnimationToJump(() => playerController.Jump());
         }
 
@@ -74,10 +74,9 @@ namespace HarvestFestival.Entities
                 var direction = Camera.main.transform.forward;
                 _state.SetState(PlayerStateType.Attack);
 
-                var projectile = PrefabHelper.Load(stats.projectile);
-
-                _skin.WaitMomentAnimationToAttack(async () => {
-                    playerController.Attack(direction, projectile);
+                _skin.WaitMomentAnimationToAttack(async () =>
+                {
+                    playerController.Attack(direction, stats.projectile);
 
                     if (!_isOffline)
                         await NetworkHelper.Send<AttackNetworkEntity>(OpCodeType.PLAYER_ATTACK_LIGHT, new AttackNetworkEntity
@@ -106,13 +105,13 @@ namespace HarvestFestival.Entities
         #endregion
 
         #region Callbacks Events
-        private void OnCollisionEnterCallback(GameObject other)
-        {
-            if (_isFalling)
-            {
-                _isFalling = false;
-            }
-        }
+        // private void OnCollisionEnterCallback(GameObject other)
+        // {
+        //     if (_isFalling)
+        //     {
+        //         _isFalling = false;
+        //     }
+        // }
         #endregion
 
         #region Unity Events
@@ -120,13 +119,12 @@ namespace HarvestFestival.Entities
         {
             base.Start();
 
-            _skin.GetComponent<Skin>().OnCollisionEnterCallback += OnCollisionEnterCallback;
-
             // esse metodo é só para poder testar sem ta conectado
             // quando abrir a cena direto p testar mecanica e tals no player
-            if (!_isOffline) return;
-
-            Init(stats, "");
+            if (_isOffline)
+            {
+                Init(stats, "");
+            }
         }
 
         void Update()

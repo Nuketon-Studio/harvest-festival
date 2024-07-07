@@ -3,7 +3,7 @@ using UnityEditor;
 
 namespace HarvestFestival.SO
 {
-    [CreateAssetMenu(fileName = "CharacterSO", menuName = "ScriptableObjects/new character", order = 0)]
+    [CreateAssetMenu(fileName = "CharacterSO", menuName = "ScriptableObjects/New Character", order = 0)]
     public class CharacterSO : ScriptableObject
     {
         public string displayName = "";

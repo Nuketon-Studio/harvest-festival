@@ -4,7 +4,7 @@ namespace HarvestFestival.Entities.Projectiles
 {
     public class Projectile : MonoBehaviour
     {
-        public static void Fire(GameObject shooter, Vector3 direction, GameObject prefab)
+        public static void Create(GameObject shooter, Vector3 direction, GameObject prefab)
         {
             if (prefab != null)
             {

@@ -98,6 +98,7 @@ GameObject:
   - component: {fileID: 8372432714929916793}
   - component: {fileID: 345541169866375743}
   - component: {fileID: 3569342629186664703}
+  - component: {fileID: 5126426103944252955}
   m_Layer: 11
   m_Name: PlayerLocalPrefab
   m_TagString: Local Player
@@ -146,9 +147,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerController: {fileID: 345541169866375743}
+  hitUI: {fileID: 5126426103944252955}
   stats: {fileID: 0}
-  isOffline: 0
-  animator: {fileID: 0}
+  _isOffline: 0
+--- !u!114 &5126426103944252955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7722015302399196929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3d07bc4d66191942be270439a12ab5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8187747802640206259
 GameObject:
   m_ObjectHideFlags: 0

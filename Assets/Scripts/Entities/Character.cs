@@ -7,11 +7,14 @@ namespace HarvestFestival.Entities
 {
     class Character : MonoBehaviour
     {
+        [Header("References")]
         [SerializeField] protected PlayerController playerController;
+
+        [Header("settings")]
         [SerializeField] protected CharacterSO stats;
 
         [Header("Debug")]
-        [SerializeField]protected bool _isOffline = false;
+        [SerializeField] protected bool _isOffline = false;
 
         protected int _hp;
         protected string _userId;
@@ -38,6 +41,8 @@ namespace HarvestFestival.Entities
             var instance = Instantiate(PrefabHelper.Load(stats.skin));
             instance.transform.position = transform.position;
             instance.transform.SetParent(transform);
+
+            instance.name = "Skin";
 
             _skin = instance.GetComponent<Skin>();
         }

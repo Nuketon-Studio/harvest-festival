@@ -1,5 +1,6 @@
 using HarvestFestival.Entities.Network;
 using HarvestFestival.Entities.Projectiles;
+using HarvestFestival.Helpers;
 using HarvestFestival.SO;
 using UnityEngine;
 
@@ -37,9 +38,10 @@ namespace HarvestFestival.Controllers
             transform.GetComponentInChildren<Rigidbody>().AddForce(Vector3.up * _character.speed, ForceMode.Impulse);
         }
 
-        public void Attack(Vector3 direction, GameObject prefabName)
+        public void Attack(Vector3 direction, string prefabName)
         {
-            Projectile.Fire(gameObject, direction, prefabName);
+            var projectile = PrefabHelper.Load(prefabName);
+            Projectile.Create(gameObject, direction, projectile);
         }
         #endregion
     }

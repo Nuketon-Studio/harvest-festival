@@ -1,18 +1,20 @@
 using DG.Tweening;
+using HarvestFestival.SO;
 using UnityEngine;
 
 namespace HarvestFestival.Entities.Projectiles
 {
     class Watermelon : Projectile
     {
-        public float force = 1f;
-        public int damage = 50;
+        [SerializeField] private ProjectileSO stats;
 
         private void OnTriggerEnter(Collider other)
         {
-            if (other.gameObject.TryGetComponent(out Character character))
+            if (other.gameObject.transform.parent.TryGetComponent(out Character character))
             {
-                character.Hit(damage);
+                character.Hit(stats.damage);
+                Destroy(gameObject);
+                return;
             }
 
             Destroy(gameObject, 3f);
@@ -22,7 +24,7 @@ namespace HarvestFestival.Entities.Projectiles
         {
             transform.position = shooter.transform.Find("CameraSpot/AIM").transform.position + shooter.transform.forward * .5f;
 
-            Vector3 directionForce = direction * force;
+            Vector3 directionForce = direction * stats.force;
 
             GetComponent<Rigidbody>().AddForce(directionForce, ForceMode.Impulse);
         }

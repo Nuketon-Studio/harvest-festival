@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Text;
 using HarvestFestival.Controllers;
 using HarvestFestival.Entities.Network;
+using HarvestFestival.Helpers;
 using HarvestFestival.SO;
 using HarvestFestival.States;
 using HarvestFestival.Types;
@@ -36,6 +37,8 @@ namespace HarvestFestival.Entities
         {
             _hp -= damage;
 
+            UIHelper.Hit(transform.Find("Skin").gameObject.transform);
+            
             if (_hp <= 0) Die();
         }
 
