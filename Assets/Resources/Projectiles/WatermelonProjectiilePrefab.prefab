@@ -103,6 +103,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07c5153b280ee714d929caf8267bea7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hitSplashEffectPrefab: {fileID: 26315855015349452, guid: 65b3e551ab6378e4aa7218b63d09d80c, type: 3}
   stats: {fileID: 11400000, guid: d3cf106ccd74b7a41b67293111bf71d3, type: 2}
 --- !u!54 &6620120687461335995
 Rigidbody:
