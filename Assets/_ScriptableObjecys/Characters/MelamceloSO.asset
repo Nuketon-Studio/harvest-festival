@@ -16,5 +16,8 @@ MonoBehaviour:
   hp: 100
   speed: 7
   speedRun: 12
-  projectile: {fileID: 324286019146093274, guid: a8a386df0ae59094fb496dbecd5f1689, type: 3}
-  skin: {fileID: 4578674812677724650, guid: 1f30e56e039efac4a9f751c7a8a8d7fd, type: 3}
+  jumpForce: 0.7
+  projectile: Projectiles/WatermelonProjectiilePrefab
+  projectileIndex: 0
+  skin: Skins/Watermelon/WatermelonSkinDefaultPrefab
+  skinIndex: 1

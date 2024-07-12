@@ -1,6 +1,7 @@
 using System;
 using HarvestFestival.States;
 using HarvestFestival.Types;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace HarvestFestival.Entities
@@ -8,6 +9,9 @@ namespace HarvestFestival.Entities
     public class Skin : MonoBehaviour
     {
         [SerializeField] private Animator animator;
+
+        [Header("Events")]
+        public Action<Collision> OnCollisionEnterCallback;
 
         private Action _attackCallback;
         private Action _jumpCallback;
@@ -35,6 +39,13 @@ namespace HarvestFestival.Entities
         private void Walk(bool isWalk)
         {
             animator?.SetBool("Walk", isWalk);
+        }
+        #endregion
+
+        #region Collisions
+        private void OnCollisionEnter(Collision other)
+        {
+            if (OnCollisionEnterCallback is not null) OnCollisionEnterCallback(other);
         }
         #endregion
 

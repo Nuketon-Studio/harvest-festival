@@ -10,6 +10,7 @@ namespace HarvestFestival.SO
         public int hp;
         public float speed;
         public float speedRun;
+        public float jumpForce;
 
         [HideInInspector]
         public string projectile;

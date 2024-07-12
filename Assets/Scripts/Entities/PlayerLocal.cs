@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using HarvestFestival.Controllers;
 using HarvestFestival.Entities.Network;
 using HarvestFestival.Helpers;
@@ -28,6 +27,8 @@ namespace HarvestFestival.Entities
 
             _state = new PlayerStateMachine();
             _state.OnChangeState += _skin.OnChangeState;
+
+            _skin.OnCollisionEnterCallback += OnSkinCollisionEnter;
         }
 
         #region Actions
@@ -35,11 +36,16 @@ namespace HarvestFestival.Entities
         {
             var horizontal = Input.GetAxisRaw("Horizontal");
             var vertical = Input.GetAxisRaw("Vertical");
+            var speed = stats.speed;
+
+            if (Input.GetKeyDown(KeyCode.LeftShift)) {
+                speed = stats.speedRun;
+            }
 
             if (horizontal == 0 && vertical == 0)
             {
                 _isInputMove = false;
-                _state.SetState(PlayerStateType.Walk_Stop);
+                _state?.SetState(PlayerStateType.Walk_Stop);
                 return;
             }
 
@@ -48,6 +54,7 @@ namespace HarvestFestival.Entities
                 x = horizontal,
                 y = 0,
                 z = vertical,
+                speed = speed,
                 userId = GameManager.Instance?.UserId
             };
 
@@ -104,14 +111,11 @@ namespace HarvestFestival.Entities
         }
         #endregion
 
-        #region Callbacks Events
-        // private void OnCollisionEnterCallback(GameObject other)
-        // {
-        //     if (_isFalling)
-        //     {
-        //         _isFalling = false;
-        //     }
-        // }
+        #region Collisions
+        private void OnSkinCollisionEnter(Collision other)
+        {
+            if(other.transform.CompareTag("Ground") && _isFalling) _isFalling = false;
+        }
         #endregion
 
         #region Unity Events

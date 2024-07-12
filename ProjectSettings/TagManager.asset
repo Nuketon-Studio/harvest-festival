@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Remote Player
   - Local Player
+  - Ground
   layers:
   - Default
   - TransparentFX

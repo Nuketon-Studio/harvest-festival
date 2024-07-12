@@ -10,7 +10,7 @@ namespace HarvestFestival.Helpers
             var ui = PrefabHelper.Load("UI/UIHitPrefab");
             var instance = Instantiate(ui);
 
-            instance.transform.position = transform.position + Vector3.up * 2;
+            instance.transform.position = transform.position + Vector3.up * 4;
             instance.transform.LookAt(Camera.main.transform);
 
             Destroy(instance, timeToDestroy);

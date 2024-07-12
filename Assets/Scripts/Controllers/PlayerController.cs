@@ -28,14 +28,14 @@ namespace HarvestFestival.Controllers
 
             if (!_canMove || _position.toVector3() == Vector3.zero) return;
 
-            transform.Translate(_position.toVector3() * _character.speed * Time.deltaTime);
+            transform.Translate(_position.toVector3() * position.speed * Time.deltaTime);
         }
 
         public void Jump()
         {
             if (!_canMove) return;
 
-            transform.GetComponentInChildren<Rigidbody>().AddForce(Vector3.up * _character.speed, ForceMode.Impulse);
+            transform.GetComponentInChildren<Rigidbody>().AddForce(Vector3.up * _character.jumpForce, ForceMode.Impulse);
         }
 
         public void Attack(Vector3 direction, string prefabName)
